@@ -1,0 +1,136 @@
+[project]
+name = "sample-fastapi-project"
+version = "0.1.0"
+description = "FastAPI Project"
+requires-python = ">=3.13"
+dependencies = [
+    # Add your dependencies here, for example:
+    # "requests>=2.25.1",
+    # "numpy>=1.21.0",
+]
+
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+indent-width = 4
+
+extend-exclude = [
+    # "tests",
+    "__init__.py",
+    "*.ipynb",
+    "*debug.py",
+    "tests/*",
+]
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = [
+    "E",      # pycodestyle error
+    "F",      # Pyflakes
+    "W",      # pycodestyle warning
+    "B",      # flake8-bugbear
+    "COM",    # flake8-commas
+    "D",      # pydocstyle
+    "I",      # isort
+    "N",      # pep8-naming
+    "ISC",    # flake8-implicit-str-concat (duplicate entry removed)
+    "ANN",    # flake8-annotations
+    "ASYNC",  # flake8-async
+    "EM",     # flake8-errmsg
+    "ISC",    # flake8-implicit-str-concat
+    "C90",    # McCabe complexity
+    "ISC",    # flake8-implicit-str-concat
+]
+ignore = [
+    "ANN002",  # Missing type annotation for `self` in method
+    "ANN003",  # Missing type annotation for `cls` in classmethod
+    "ANN204",  # missing-return-type-special-method
+    "ANN401",  # missing-return-type
+    "D1",      # undocumented-public-[module|class|method|function|package], undocumented-magic-method, undocumented-public-nested-class, undocumented-public-init
+    "N813",    # camelcase-imported-as-lowercase
+    "N814",    # camelcase-imported-as-constant
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = [
+    "F401",   # 使用していないimport文を勝手に削除しない
+]
+
+[tool.ruff.lint.isort.sections]
+testing = ["pytest", "_pytest"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src", "common"]
+section-order = ["future", "testing", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "single"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "lf"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning",]
+addopts = ["-v"]
+# addopts = ["-v", "--cov=src"]
+# pytest-cov の設定
+# cov_report = "html"
+# cov_out = "coverage_report"
+
+# [tool.coverage.run]
+# # 除外するファイルを指定
+# omit = [
+#     "__init__.py",
+#     "settings.py",
+#     "sql_queries.py",
+# ]
+
+# 含めるファイルを指定 (omit と併用可能)
+# include = [
+#     "path/to/include1.py",
+#     "path/to/include2.py",
+# ]
+
+# ブランチカバレッジを計測
+branch = true
+
+# 並行実行時の設定
+parallel = true
+
+[tool.coverage.report]
+# レポートの詳細設定
+show_missing = true
+fail_under = 70
