@@ -18,12 +18,35 @@
                 "python.pythonPath": "/usr/local/bin/python",
                 "python.defaultInterpreterPath": "/usr/local/bin/python",
                 "terminal.integrated.shell.linux": "/bin/bash",
-                "python.formatter.provider": "ruff",
+                // Ruff設定
+                "python.linting.enabled": true,
+                "python.linting.ruffEnabled": true,
+                "python.linting.pylintEnabled": false,
+                "python.linting.flake8Enabled": false,
+                "python.linting.mypyEnabled": false,
+                "python.linting.ruffArgs": [
+                    "--config=pyproject.toml"
+                ],
+                // フォーマッター設定
+                "python.formatting.provider": "none",
+                "[python]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.ruff": "explicit",
+                        "source.organizeImports.ruff": "explicit"
+                    }
+                },
+                // Ruffの設定ファイル指定
+                "ruff.configurationPreference": "filesystemFirst",
+                "ruff.importStrategy": "fromEnvironment",
+                // 一般的な編集設定
                 "editor.formatOnSave": true,
-                // "[python]": {
-                //     "editor.defaultFormatter": "charliermarsh.ruff"
-                // },
-                "files.trimTrailingWhitespace": true
+                "files.trimTrailingWhitespace": true,
+                "editor.rulers": [
+                    100
+                ],
+                "files.insertFinalNewline": true
             }
         }
     },
