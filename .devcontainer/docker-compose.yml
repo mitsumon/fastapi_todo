@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    command: sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      # Mount the entire project directory
+      - ..:/workspaces/todo-project:cached
+    working_dir: /workspaces/todo-project
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/workspaces/todo-project
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:password@db:5432/todo_db}
+      - SECRET_KEY=${SECRET_KEY:-your_secret_key_here}
+      - DEBUG=${DEBUG:-true}
+    depends_on:
+      - db
+    env_file:
+      - ../.env
+    user: root
+
+  db:
+    image: postgres:17.6-bookworm
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-todo_db}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgres_data:

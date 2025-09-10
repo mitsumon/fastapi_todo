@@ -1,0 +1,31 @@
+{
+    "name": "Todo Project with FastAPI Dev Container",
+    "dockerComposeFile": "./docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspaces/todo-project",
+    "shutdownAction": "stopCompose",
+    "remoteUser": "root",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "charliermarsh.ruff",
+                "ms-python.black-formatter",
+                "ms-python.isort"
+            ],
+            "settings": {
+                "python.pythonPath": "/usr/local/bin/python",
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "python.formatter.provider": "ruff",
+                "editor.formatOnSave": true,
+                // "[python]": {
+                //     "editor.defaultFormatter": "charliermarsh.ruff"
+                // },
+                "files.trimTrailingWhitespace": true
+            }
+        }
+    },
+    // "postCreateCommand": "pip install --no-cache-dir -r requirements-full.txt"
+}
