@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = 'Todo API'
 
     # 環境設定
-    ENVIRONMENT: str = Field(default='development', description='実行環境')
+    ENVIRONMENT: str = Field(default='local', description='実行環境')
     DEBUG: bool = Field(default=True, description='デバッグモード')
 
     # セキュリティ設定
@@ -73,17 +73,18 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         """Async database URL for the application."""
-        if self.SQLALCHEMY_DATABASE_URI:
-            return self.SQLALCHEMY_DATABASE_URI
-        return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}/{self.POSTGRES_DB}'
+        return (
+            f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}'
+            f'@{self.POSTGRES_HOST}/{self.POSTGRES_DB}'
+        )
 
     @property
     def database_url_sync(self) -> str:
         """Sync database URL for Alembic migrations."""
-        if self.SQLALCHEMY_DATABASE_URI:
-            # If a full URI is provided, convert it for sync usage
-            return self.SQLALCHEMY_DATABASE_URI.replace('postgresql+asyncpg', 'postgresql')
-        return f'postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}/{self.POSTGRES_DB}'
+        return (
+            f'postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}'
+            f'@{self.POSTGRES_HOST}/{self.POSTGRES_DB}'
+        )
 
     class Config:
         env_file = '.env'
