@@ -1,13 +1,11 @@
-import os
-import sys
 from logging.config import fileConfig
 
 from sqlalchemy import create_engine
+from sqlmodel import SQLModel
 
 from alembic import context
 from app.core.config import settings
-from app.models import *  # noqa: F401, F403, E402
-from app.models.base import BaseModel  # noqa: E402
+from app.infrastructure.database.models import *  # noqa: F401, F403, E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -18,9 +16,6 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Add the project's root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 # Override the sqlalchemy.url
 if settings.database_url_sync:
     config.set_main_option('sqlalchemy.url', settings.database_url_sync)
@@ -29,7 +24,7 @@ if settings.database_url_sync:
 # for 'autogenerate' support
 # from myapp import mymodel
 # The target metadata for autogenerate support
-target_metadata = BaseModel.metadata
+target_metadata = SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

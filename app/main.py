@@ -2,15 +2,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1 import api_router
 from app.core.config import settings
+from app.core.timezone_middleware import TimezoneMiddleware
 from app.db.session import ASession
+from app.presentation.api.v1 import api_router
 
 app = FastAPI(
     title='FastAPI Project',
     openapi_url=f'{settings.API_V1_STR}/openapi.json',
 )
 
+# タイムゾーンミドルウェア設定
+app.add_middleware(
+    TimezoneMiddleware,
+)
 # CORS設定
 app.add_middleware(
     CORSMiddleware,

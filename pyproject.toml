@@ -28,36 +28,38 @@ extend-exclude = [
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
 # McCabe complexity (`C901`) by default.
 select = [
-    "E",      # pycodestyle error
-    "F",      # Pyflakes
-    "W",      # pycodestyle warning
-    "B",      # flake8-bugbear
-    "COM",    # flake8-commas
-    "D",      # pydocstyle
-    "I",      # isort
-    "N",      # pep8-naming
-    "ISC",    # flake8-implicit-str-concat (duplicate entry removed)
-    "ANN",    # flake8-annotations
-    "ASYNC",  # flake8-async
-    "EM",     # flake8-errmsg
-    "ISC",    # flake8-implicit-str-concat
-    "C90",    # McCabe complexity
-    "ISC",    # flake8-implicit-str-concat
+    "E",     # pycodestyle error
+    "F",     # Pyflakes
+    "W",     # pycodestyle warning
+    "B",     # flake8-bugbear
+    "COM",   # flake8-commas
+    "D",     # pydocstyle
+    "I",     # isort
+    "N",     # pep8-naming
+    "ISC",   # flake8-implicit-str-concat (duplicate entry removed)
+    "ANN",   # flake8-annotations
+    "ASYNC", # flake8-async
+    "EM",    # flake8-errmsg
+    "ISC",   # flake8-implicit-str-concat
+    "C90",   # McCabe complexity
+    "ISC",   # flake8-implicit-str-concat
 ]
 ignore = [
-    "ANN002",  # Missing type annotation for `self` in method
-    "ANN003",  # Missing type annotation for `cls` in classmethod
-    "ANN204",  # missing-return-type-special-method
-    "ANN401",  # missing-return-type
-    "D1",      # undocumented-public-[module|class|method|function|package], undocumented-magic-method, undocumented-public-nested-class, undocumented-public-init
-    "N813",    # camelcase-imported-as-lowercase
-    "N814",    # camelcase-imported-as-constant
+    "ANN002", # Missing type annotation for `self` in method
+    "ANN003", # Missing type annotation for `cls` in classmethod
+    "ANN204", # missing-return-type-special-method
+    "ANN401", # missing-return-type
+    "D1",     # undocumented-public-[module|class|method|function|package], undocumented-magic-method, undocumented-public-nested-class, undocumented-public-init
+    "N813",   # camelcase-imported-as-lowercase
+    "N814",   # camelcase-imported-as-constant
+    "EM102",  # f-string is missing placeholders
+    "B008",   # Do not perform function calls in argument defaults
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 unfixable = [
-    "F401",   # 使用していないimport文を勝手に削除しない
+    "F401", # 使用していないimport文を勝手に削除しない
 ]
 
 [tool.ruff.lint.isort.sections]
@@ -65,7 +67,14 @@ testing = ["pytest", "_pytest"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["src", "common"]
-section-order = ["future", "testing", "standard-library", "third-party", "first-party", "local-folder"]
+section-order = [
+    "future",
+    "testing",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 15
@@ -103,7 +112,7 @@ docstring-code-line-length = "dynamic"
 [tool.pytest.ini_options]
 pythonpath = "src"
 testpaths = ["tests"]
-filterwarnings = ["ignore::DeprecationWarning",]
+filterwarnings = ["ignore::DeprecationWarning"]
 addopts = ["-v"]
 # addopts = ["-v", "--cov=src"]
 # pytest-cov の設定

@@ -21,3 +21,6 @@ RUN pip install --no-cache-dir --root-user-action=ignore -r requirements_full.tx
 RUN chmod -R 755 /workspaces
 
 ENV PYTHONUNBUFFERED=1
+
+# Keep container running
+CMD ["sleep", "infinity"]
