@@ -1,10 +1,11 @@
 import uuid
 from typing import Callable
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.use_cases.user_use_cases import UserUseCases
+from app.application.usecases.user_usecases import UserUseCases
 from app.core.dependencies import get_async_session, get_timezone_converter
 from app.core.exceptions import UserAlreadyExistsError, UserNotFoundError
 from app.infrastructure.database.repositories.user_repository_impl import UserRepositoryImpl
@@ -29,7 +30,7 @@ async def get_users(
     """全ユーザーを取得."""
     try:
         users = await user_use_cases.get_all_users()
-        return [UserResponse.from_entity(user, timezone_converter) for user in users]
+        return [UserResponse.from_ebntity(user, timezone_converter) for user in users]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from None
 
@@ -59,9 +60,20 @@ async def create_user(
         user = await user_use_cases.create_user(user_data.model_dump())
         return UserResponse.from_entity(user)
     except UserAlreadyExistsError as e:
-        raise HTTPException(status_code=409, detail=str(e)) from None
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e),
+        ) from None
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=e.errors,
+        ) from None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from None
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from None
 
 
 @router.post('/debug', response_model=dict)

@@ -52,6 +52,7 @@ ignore = [
     "D1",     # undocumented-public-[module|class|method|function|package], undocumented-magic-method, undocumented-public-nested-class, undocumented-public-init
     "N813",   # camelcase-imported-as-lowercase
     "N814",   # camelcase-imported-as-constant
+    "EM101",  # f-string is missing 'f' prefix
     "EM102",  # f-string is missing placeholders
     "B008",   # Do not perform function calls in argument defaults
 ]
