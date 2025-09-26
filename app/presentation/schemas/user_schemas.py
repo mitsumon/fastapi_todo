@@ -39,16 +39,16 @@ class UserCreate(BaseModel):
     def validate_username(cls, v: str) -> str:
         """ユーザー名のカスタムバリデーション."""
         if not v:
-            raise ValidationError('ユーザー名は必須です')
+            raise ValueError('ユーザー名は必須です')
 
         # # 英数字とアンダースコアのみ許可
         # if not re.match(r'^[a-zA-Z0-9_]+$', v):
-        #     raise ValidationError('ユーザー名は英数字とアンダースコアのみ使用できます')
+        #     raise ValueError('ユーザー名は英数字とアンダースコアのみ使用できます')
 
         # # 予約語チェック
         # reserved_words = ['admin', 'root', 'system', 'null', 'undefined']
         # if v.lower() in reserved_words:
-        #     raise ValidationError(f'ユーザー名 "{v}" は予約語のため使用できません')
+        #     raise ValueError(f'ユーザー名 "{v}" は予約語のため使用できません')
 
         return v.strip()
 
@@ -59,7 +59,7 @@ class UserCreate(BaseModel):
         check = True
         if not v:
             check = False
-            raise ValidationError('パスワードは必須です')
+            raise ValueError('パスワードは必須です')
 
         # 大文字、小文字、数字、特殊文字を含むかチェック
         if not re.search(r'[A-Z]', v):
@@ -72,14 +72,14 @@ class UserCreate(BaseModel):
             check = False
 
         if not check:
-            raise ValidationError('パスワードには英字大文字、小文字、数字を含める必要があります')
+            raise ValueError('パスワードには英字大文字、小文字、数字を含める必要があります')
         # if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
-        #     raise ValidationError('パスワードには特殊文字を含める必要があります')
+        #     raise ValueError('パスワードには特殊文字を含める必要があります')
 
         # 一般的な脆弱なパスワードをチェック
         weak_passwords = ['password', '12345678', 'qwerty', 'letmein']
         if v.lower() in weak_passwords:
-            raise ValidationError('より強力なパスワードを設定してください')
+            raise ValueError('より強力なパスワードを設定してください')
 
         return v
 
@@ -104,13 +104,13 @@ class UserResponse(BaseModel):
     ) -> 'UserResponse':
         """ドメインエンティティから変換(タイムゾーン変換含む)."""
         return cls(
-            id=user.id,
-            username=user.username,
-            email=user.email,
-            is_active=user.is_active,
-            is_superuser=user.is_superuser,
-            created_at=timezone_converter(user.created_at),
-            updated_at=timezone_converter(user.updated_at),
+            id=str(user.id),
+            username=user.username.value,
+            email=user.email.value,
+            is_active=user.is_active.value,
+            is_superuser=user.is_superuser.value,
+            created_at=timezone_converter(user.created_at.value),
+            updated_at=timezone_converter(user.updated_at.value),
         )
 
     class Config:

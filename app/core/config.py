@@ -27,6 +27,7 @@ class Settings(BaseSettings):
         default=30,
         description='アクセストークンの有効期限（分）',
     )
+    ALGORITHM: str = Field(default='HS256', description='JWTアルゴリズム')
 
     # AWS Cognito設定（本番環境用）
     COGNITO_USER_POOL_ID: str = Field(default='', description='Cognito ユーザープールID')

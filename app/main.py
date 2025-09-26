@@ -1,10 +1,10 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.dependencies import get_async_session
 from app.core.timezone_middleware import TimezoneMiddleware
-from app.db.session import ASession
 from app.presentation.api.v1 import api_router
 
 app = FastAPI(
@@ -35,7 +35,7 @@ async def health_check() -> dict[str, str]:
 
 
 @app.get('/dbtest')
-async def db_test(db: AsyncSession = ASession) -> dict[str, str]:
+async def db_test(db: AsyncSession = Depends(get_async_session)) -> dict[str, str]:
     """Database test endpoint."""
     from sqlalchemy import text
 

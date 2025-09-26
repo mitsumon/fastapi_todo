@@ -2,8 +2,8 @@ import asyncio
 
 from sqlmodel import select
 
+from app.core.dependencies import AsyncSessionLocal
 from app.core.security import hash_password
-from app.db.session import AsyncSessionLocal
 from app.infrastructure.database.models.users import User
 
 
@@ -20,7 +20,7 @@ async def seed_users() -> None:
         # Define seed data
         users = [
             User(
-                username='Mitsuhito Mondo',
+                username='MitsuhitoMondo',
                 email='test@example.com',
                 password=hash_password('pAssw0rd'),
                 is_active=True,

@@ -8,6 +8,6 @@ class User(BaseModel, TimestampMixin, table=True):
 
     username: str = Field(unique=True, index=True, max_length=50)
     email: str = Field(unique=True, index=True, max_length=255)
-    password: str = Field(max_length=128)
+    password: str = Field(min_length=8, max_length=128)
     is_active: bool = Field(default=True)
     is_superuser: bool = Field(default=False)

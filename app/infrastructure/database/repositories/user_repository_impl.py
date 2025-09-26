@@ -4,8 +4,17 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import delete, select
 
+from app.application.interfaces.user_repository import UserRepository
 from app.domain.entities.user import User as UserEntity
-from app.domain.repositories.user_repository import UserRepository
+from app.domain.entities.user import UserList as UserEntityList
+from app.domain.value_objects.created_at import CreatedAt
+from app.domain.value_objects.updated_at import UpdatedAt
+from app.domain.value_objects.user_value_objects.email import Email
+from app.domain.value_objects.user_value_objects.is_active import IsActive
+from app.domain.value_objects.user_value_objects.is_superuser import IsSuperUser
+from app.domain.value_objects.user_value_objects.password import Password
+from app.domain.value_objects.user_value_objects.username import Username
+from app.domain.value_objects.uuid import UuId
 from app.infrastructure.database.models.users import User as UserModel
 
 
@@ -23,26 +32,30 @@ class UserRepositoryImpl(UserRepository):
         await self._session.refresh(user_model)
         return self._model_to_entity(user_model)
 
-    async def get_by_id(self, user_id: uuid.UUID) -> Optional[UserEntity]:
+    async def get_by_id(self, user_id: UuId) -> Optional[UserEntity]:
         """IDでユーザーを取得."""
-        statement = select(UserModel).where(UserModel.id == user_id)
+        statement = select(UserModel).where(UserModel.id == str(user_id))
         result = await self._session.execute(statement)
         user_model = result.scalar_one_or_none()
         return self._model_to_entity(user_model) if user_model else None
 
-    async def get_by_email(self, email: str) -> Optional[UserEntity]:
+    async def get_by_email(self, email: Email) -> Optional[UserEntity]:
         """メールアドレスでユーザーを取得."""
-        statement = select(UserModel).where(UserModel.email == email)
+        statement = select(UserModel).where(UserModel.email == email.value)
         result = await self._session.execute(statement)
         user_model = result.scalar_one_or_none()
         return self._model_to_entity(user_model) if user_model else None
 
-    async def get_all(self) -> List[UserEntity]:
+    async def get_all(self) -> UserEntityList:
         """全ユーザーを取得."""
         statement = select(UserModel)
         result = await self._session.execute(statement)
         user_models = result.scalars().all()
-        return [self._model_to_entity(model) for model in user_models]
+        user_list = UserEntityList(
+            [self._model_to_entity(model) for model in user_models],
+            len(user_models),
+        )
+        return user_list
 
     async def update(self, user: UserEntity) -> UserEntity:
         """ユーザーを更新."""
@@ -66,9 +79,9 @@ class UserRepositoryImpl(UserRepository):
         await self._session.refresh(user_model)
         return self._model_to_entity(user_model)
 
-    async def delete(self, user_id: uuid.UUID) -> bool:
+    async def delete(self, user_id: UuId) -> bool:
         """ユーザーを削除."""
-        statement = delete(UserModel).where(UserModel.id == user_id)
+        statement = delete(UserModel).where(UserModel.id == str(user_id))
         result = await self._session.execute(statement)
         await self._session.commit()
         return result.rowcount > 0
@@ -76,14 +89,14 @@ class UserRepositoryImpl(UserRepository):
     def _model_to_entity(self, model: UserModel) -> UserEntity:
         """DBモデル → ドメインエンティティ変換."""
         return UserEntity(
-            id=model.id,
-            username=model.username,
-            email=model.email,
-            password=model.password,
-            is_active=model.is_active,
-            is_superuser=model.is_superuser,
-            created_at=model.created_at,
-            updated_at=model.updated_at,
+            id=UuId(model.id),
+            username=Username(model.username),
+            email=Email(model.email),
+            password=Password(model.password),
+            is_active=IsActive(model.is_active),
+            is_superuser=IsSuperUser(model.is_superuser),
+            created_at=CreatedAt(model.created_at),
+            updated_at=UpdatedAt(model.updated_at),
         )
 
     def _entity_to_model(self, entity: UserEntity) -> UserModel:

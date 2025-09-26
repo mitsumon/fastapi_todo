@@ -8,6 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.usecases.user_usecases import UserUseCases
 from app.core.dependencies import get_async_session, get_timezone_converter
 from app.core.exceptions import UserAlreadyExistsError, UserNotFoundError
+from app.domain.value_objects.user_value_objects.email import Email
+from app.domain.value_objects.user_value_objects.password import Password
+from app.domain.value_objects.user_value_objects.username import Username
 from app.infrastructure.database.repositories.user_repository_impl import UserRepositoryImpl
 from app.presentation.schemas.user_schemas import UserCreate, UserResponse
 
@@ -30,14 +33,17 @@ async def get_users(
     """全ユーザーを取得."""
     try:
         users = await user_use_cases.get_all_users()
-        return [UserResponse.from_ebntity(user, timezone_converter) for user in users]
+        return [UserResponse.from_entity(user, timezone_converter) for user in users]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from None
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from None
 
 
 @router.get('/{user_id}', response_model=UserResponse)
 async def get_user(
-    user_id: uuid.UUID,
+    user_id: str,
     user_use_cases: UserUseCases = Depends(get_user_use_cases),
 ) -> UserResponse:
     """特定のユーザーを取得."""
@@ -45,19 +51,29 @@ async def get_user(
         user = await user_use_cases.get_user_by_id(user_id)
         return UserResponse.from_entity(user)
     except UserNotFoundError:
-        raise HTTPException(status_code=404, detail='User not found') from None
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='User not found',
+        ) from None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from None
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from None
 
 
-@router.post('', response_model=UserResponse)
+@router.post('', response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def create_user(
     user_data: UserCreate,
     user_use_cases: UserUseCases = Depends(get_user_use_cases),
 ) -> UserResponse:
     """ユーザーを作成."""
     try:
-        user = await user_use_cases.create_user(user_data.model_dump())
+        user = await user_use_cases.create_user(
+            username=user_data.username,
+            email=user_data.email,
+            password=user_data.password,
+        )
         return UserResponse.from_entity(user)
     except UserAlreadyExistsError as e:
         raise HTTPException(
@@ -74,15 +90,3 @@ async def create_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
         ) from None
-
-
-@router.post('/debug', response_model=dict)
-async def debug_create_user(
-    user_data: UserCreate,
-) -> dict:
-    """デバッグ用エンドポイント."""
-    try:
-        data = user_data.model_dump()
-        return {'received_data': data, 'status': 'ok'}
-    except Exception as e:
-        return {'error': str(e), 'type': type(e).__name__}
