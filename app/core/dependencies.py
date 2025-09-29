@@ -27,10 +27,7 @@ sync_engine = create_engine(settings.database_url_sync, pool_pre_ping=True)
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """Get async database session."""
     async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+        yield session
 
 
 def get_session() -> Generator[Session, None, None]:

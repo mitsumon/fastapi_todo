@@ -1,6 +1,7 @@
-import uuid
-from typing import List, Optional
+from typing import AsyncGenerator, Optional
 
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlmodel import apaginate
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import delete, select
 
@@ -16,6 +17,7 @@ from app.domain.value_objects.user_value_objects.password import Password
 from app.domain.value_objects.user_value_objects.username import Username
 from app.domain.value_objects.uuid import UuId
 from app.infrastructure.database.models.users import User as UserModel
+from app.presentation.schemas.user_schemas import UserResponse
 
 
 class UserRepositoryImpl(UserRepository):
@@ -48,14 +50,29 @@ class UserRepositoryImpl(UserRepository):
 
     async def get_all(self) -> UserEntityList:
         """全ユーザーを取得."""
-        statement = select(UserModel)
+        statement = select(UserModel).order_by(UserModel.created_at)
         result = await self._session.execute(statement)
-        user_models = result.scalars().all()
-        user_list = UserEntityList(
-            [self._model_to_entity(model) for model in user_models],
-            len(user_models),
-        )
-        return user_list
+        return [self._model_to_entity(user) for user in result.scalars().all()]
+
+    async def get_all_streaming(self) -> AsyncGenerator[UserEntity, None]:
+        """全ユーザーをストリーミングで取得."""
+        statement = select(UserModel).order_by(UserModel.created_at)
+
+        # SQLAlchemyのstreamを使用してメモリ効率的に取得
+        result = await self._session.stream(statement)
+
+        async for row in result:
+            user_model = row[0]  # streamの場合はタプルで返される
+            yield self._model_to_entity(user_model)
+
+    async def get_all_safe(self) -> Page[UserResponse]:
+        """全ユーザーを取得.
+
+        - パスワードなどの機密情報を除外.
+        - ページネーション対応.
+        """
+        statement = select(UserModel).order_by(UserModel.created_at)
+        return await apaginate(self._session, statement)
 
     async def update(self, user: UserEntity) -> UserEntity:
         """ユーザーを更新."""
@@ -93,6 +110,21 @@ class UserRepositoryImpl(UserRepository):
             username=Username(model.username),
             email=Email(model.email),
             password=Password(model.password),
+            is_active=IsActive(model.is_active),
+            is_superuser=IsSuperUser(model.is_superuser),
+            created_at=CreatedAt(model.created_at),
+            updated_at=UpdatedAt(model.updated_at),
+        )
+
+    def _model_to_entity_safe(self, model: UserModel) -> UserEntity:
+        """DBモデル → ドメインエンティティ変換.
+
+        パスワードを含まないユーザーエンティティを返す.
+        """
+        return UserEntity(
+            id=UuId(model.id),
+            username=Username(model.username),
+            email=Email(model.email),
             is_active=IsActive(model.is_active),
             is_superuser=IsSuperUser(model.is_superuser),
             created_at=CreatedAt(model.created_at),

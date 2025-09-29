@@ -19,7 +19,7 @@ class User:
 
     username: Username
     email: Email
-    password: Password
+    password: Optional[Password] = None
     is_active: IsActive = IsActive(True)
     is_superuser: IsSuperUser = IsSuperUser(False)
     id: Optional[UuId] = None
@@ -42,17 +42,20 @@ class UserList:
     """ユーザーリストドメインエンティティ."""
 
     users: list[User]
-    total_count: int
+    total: Optional[int] = None
+    page: Optional[int] = None
+    size: Optional[int] = None
+    pages: Optional[int] = None
 
     def add_user(self, user: User) -> None:
         """ユーザーをリストに追加."""
         self.users.append(user)
-        self.total_count += 1
+        self.total += 1
 
     def remove_user(self, user: User) -> None:
         """ユーザーをリストから削除."""
         self.users.remove(user)
-        self.total_count -= 1
+        self.total -= 1
 
     def get_user_by_id(self, user_id: UuId) -> Optional[User]:
         """IDでユーザーを取得."""
@@ -75,7 +78,7 @@ class UserList:
 
     def __len__(self) -> int:
         """ユーザーリストの長さを返す."""
-        return self.total_count
+        return len(self.users)
 
     def __iter__(self):
         """ユーザーリストのイテレータを返す."""

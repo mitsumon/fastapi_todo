@@ -1,6 +1,6 @@
 import uuid
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import AsyncGenerator, Optional
 
 from app.domain.entities.user import User as UserEntity
 from app.domain.entities.user import UserList as UserEntityList
@@ -29,6 +29,19 @@ class UserRepository(ABC):
     @abstractmethod
     async def get_all(self) -> UserEntityList:
         """全ユーザーを取得."""
+        pass
+
+    @abstractmethod
+    async def get_all_streaming(self) -> AsyncGenerator[UserEntity, None]:
+        """全ユーザーをストリーミングで取得."""
+        pass
+
+    @abstractmethod
+    async def get_all_safe(self) -> UserEntityList:
+        """全ユーザーを取得.
+
+        パスワードなどの機密情報を除外.
+        """
         pass
 
     @abstractmethod

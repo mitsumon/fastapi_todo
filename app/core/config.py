@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     )
     ALGORITHM: str = Field(default='HS256', description='JWTアルゴリズム')
 
+    CSRF_KEY: str = Field(
+        default='your-csrf-key-change-in-production',
+        description='CSRF用の認証キー',
+    )
+
     # AWS Cognito設定（本番環境用）
     COGNITO_USER_POOL_ID: str = Field(default='', description='Cognito ユーザープールID')
     COGNITO_CLIENT_ID: str = Field(default='', description='Cognito クライアントID')

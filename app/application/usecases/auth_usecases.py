@@ -4,7 +4,6 @@ from app.application.interfaces.user_repository import UserRepository
 from app.core.security import create_access_token, verify_password
 from app.domain.entities.user import User
 from app.domain.value_objects.user_value_objects.email import Email
-from app.domain.value_objects.user_value_objects.password import Password
 
 
 class AuthUseCases:

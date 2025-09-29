@@ -6,7 +6,6 @@ from pydantic import (  # , model_validator
     BaseModel,
     EmailStr,
     Field,
-    ValidationError,
     field_validator,
 )
 

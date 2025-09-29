@@ -18,26 +18,38 @@ async def seed_users() -> None:
             return
 
         # Define seed data
-        users = [
-            User(
-                username='MitsuhitoMondo',
-                email='test@example.com',
-                password=hash_password('pAssw0rd'),
-                is_active=True,
-                is_superuser=True,
-            ),
-            User(
-                username='User1',
-                email='user1e@example.com',
-                password=hash_password('user1'),
-                is_active=True,
-                is_superuser=False,
-            ),
-        ]
+        users = []
+        password = hash_password('pAssw0rd')
+        for i in range(1, 1001):
+            print(f'Seeding user {i}/1000')
+            username = f'User{i}'
+            email = f'{username.lower()}@example.com'
+            is_superuser = False
+            if i == 1:
+                is_superuser = True
 
-        # Add users to the session
-        session.add_all(users)
-        await session.commit()
+            # users.append(
+            #     User(
+            #         username=username,
+            #         email=email,
+            #         password=password,
+            #         is_active=True,
+            #         is_superuser=is_superuser,
+            #     ),
+            # )
+            # await asyncio.sleep(0.01)  # Simulate some delay
+            session.add(
+                User(
+                    username=username,
+                    email=email,
+                    password=password,
+                    is_active=True,
+                    is_superuser=is_superuser,
+                ),
+            )
+            # # Add users to the session
+            # session.add_all(users)
+            await session.commit()
         print('Seeded users table successfully!')
 
 
