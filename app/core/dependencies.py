@@ -1,5 +1,6 @@
+from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import AsyncGenerator, Callable, Generator
+from typing import Callable, Generator
 
 from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine

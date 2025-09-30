@@ -1,6 +1,7 @@
 import uuid
 from abc import ABC, abstractmethod
-from typing import AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+from typing import Optional
 
 from app.domain.entities.user import User as UserEntity
 from app.domain.entities.user import UserList as UserEntityList

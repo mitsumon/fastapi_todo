@@ -1,5 +1,5 @@
 import uuid
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from fastapi_pagination import Page
 

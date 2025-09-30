@@ -1,4 +1,5 @@
-from typing import AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+from typing import Optional
 
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import apaginate

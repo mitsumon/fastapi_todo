@@ -1,4 +1,5 @@
-from typing import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator
+from typing import Callable
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse

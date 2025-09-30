@@ -66,15 +66,15 @@ class UserList:
 
     def filter_active_users(self) -> 'UserList':
         """アクティブなユーザーのみを取得."""
-        return UserList([user for user in self.users if user.is_active.value], 0)
+        return UserList(users=[user for user in self.users if user.is_active.value])
 
     def filter_inactive_users(self) -> 'UserList':
         """非アクティブなユーザーのみを取得."""
-        return UserList([user for user in self.users if not user.is_active.value], 0)
+        return UserList(users=[user for user in self.users if not user.is_active.value])
 
     def filter_not_soft_deleted_users(self) -> 'UserList':
         """ソフトデリートされていないユーザーのみを取得."""
-        return UserList([user for user in self.users if user.deleted_at is None], 0)
+        return UserList(users=[user for user in self.users if user.deleted_at is None])
 
     def __len__(self) -> int:
         """ユーザーリストの長さを返す."""

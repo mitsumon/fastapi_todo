@@ -1,16 +1,48 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.usecases.auth_usecases import AuthUseCases
 from app.core.config import settings
 from app.core.dependencies import get_async_session
+from app.domain.entities.user import User as UserEntity
+from app.domain.value_objects.user_value_objects.email import Email
 from app.infrastructure.database.repositories.user_repository_impl import UserRepositoryImpl
 from app.presentation.schemas.auth_schemas import TokenResponse
 
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f'{settings.API_V1_STR}/auth/login')
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    session: AsyncSession = Depends(get_async_session),
+) -> UserEntity:
+    """現在のユーザーを取得."""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail='認証情報を確認できませんでした',
+        headers={'WWW-Authenticate': 'Bearer'},
+    )
+
+    # JWTトークンの検証
+    # デコードしてユーザー情報を取得
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        email = payload.get('sub')
+        if email is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception from None
+
+    user_repository = UserRepositoryImpl(session)
+    user = await user_repository.get_by_email(Email(email))
+    if user is None:
+        raise credentials_exception
+
+    return user
 
 
 async def get_auth_use_cases(
